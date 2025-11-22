@@ -4,6 +4,36 @@
   'use strict';
 
   const LETTERS = ['F', 'L', 'A', 'M', 'E', 'S'];
+    // REPLACE THIS WITH YOUR COPIED GOOGLE APPS SCRIPT URL
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz2W4_AZviKUKr_veWYpE8MEkzZ72LmdtexdqPD3E09XQNL3wK-Sgsm652owIhO16uu/exec";
+
+  function sendToSheet(nameA, nameB, resultLetter) {
+    // Map letter to full word for clearer logging
+    const resultTitle = {
+      F: 'Friendship',
+      L: 'Love',
+      A: 'Affection',
+      M: 'Marriage',
+      E: 'Enemy',
+      S: 'Sibling'
+    }[resultLetter] || resultLetter;
+
+    fetch(WEBAPP_URL, {
+      method: "POST",
+      mode: "no-cors", // Important to avoid CORS errors with Google Scripts
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nameA: nameA,
+        nameB: nameB,
+        result: resultTitle
+      })
+    }).then(() => {
+      console.log("Data sent to Sheets");
+    }).catch(err => console.error("Error sending to Sheets:", err));
+  }
+
 
   const icons = {
     F: `<svg viewBox="0 0 24 24" width="56" height="56" fill="none" aria-hidden><path d="M3 12s4-5 9-5 9 5 9 5-4 5-9 5S3 12 3 12z" fill="#FDE68A"/><path d="M7 12c0 1.657 2 3 5 3s5-1.343 5-3" stroke="#92400E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 9.2c.8-.8 2.4-.8 3.2 0" stroke="#92400E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -115,6 +145,7 @@
         setTimeout(() => {
           renderLetters(['S']);
           showFinal('S');
+          sendToSheet(aVal, bVal, 'S');
           disableControls(false);
         }, 600);
         return;
@@ -145,6 +176,7 @@
           const finalLetter = steps[steps.length - 1].remaining[0] || LETTERS[0];
           renderLetters([finalLetter]);
           showFinal(finalLetter);
+          sendToSheet(aVal, bVal, finalLetter);
           disableControls(false);
           return;
         }
